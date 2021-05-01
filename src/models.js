@@ -40,22 +40,18 @@ const Tweet = sequelize.define('tweet', {
   },
 });
 
-const Like = sequelize.define('like', {
-  tweetId: {
-    type: DataTypes.INTEGER,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-  },
-});
+User.hasMany(Tweet);
+Tweet.belongsTo(User);
 
-const Follow = sequelize.define('follow', {});
+const Like = sequelize.define('like', {});
 
 Tweet.hasMany(Like);
 Like.belongsTo(Tweet);
 
-User.hasMany(Tweet);
-Tweet.belongsTo(User);
+User.hasMany(Like);
+Like.belongsTo(User);
+
+const Follow = sequelize.define('follow', {});
 
 User.hasMany(Follow, {
   foreignKey: 'userId',
@@ -74,7 +70,7 @@ Follow.belongsTo(User, {
 async function connection() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ alter: true });
     console.log('All models were synchronized successfully.');
     console.log('Connection has been established successfully.');
   } catch (error) {
@@ -84,4 +80,4 @@ async function connection() {
 
 connection();
 
-module.exports = { sequelize, User, Tweet };
+module.exports = { sequelize, User, Tweet, Like, Follow };
