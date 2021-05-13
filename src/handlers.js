@@ -1,24 +1,49 @@
-const { sequelize, User, Tweet, Like, Follow } = require("./models");
+const bcrypt = require('bcrypt');
+const { sequelize, User, Tweet, Like, Follow } = require('./models');
+
+// constants
+const saltRounds = 10;
 
 // user handlers
-async function createUser(data) {
-  const user = await User.create(data);
-  return user.toJSON();
+
+// SignUp handler
+async function createUser(data, res) {
+  const { password } = data;
+  const hash = bcrypt.hashSync(password, saltRounds);
+  data.password = hash;
+  try {
+    const user = await User.create(data);
+    return user.toJSON();
+  } catch (error) {
+    res.status(502).json(error.name);
+  }
 }
 
+// signin handler
+async function getUser(body, res) {
+  const { email, password } = body;
+  console.log(body);
+  try {
+    const user = await User.findOne({ where: { email } });
+    // const vaild = await bcrypt.compareSync(password, user.password);
+    // if (!vaild) {
+    //   res.status(401).json({ message: 'not authorised' });
+    //   return;
+    // }
+    if (password !== user.password) {
+      res.status(401).json({ message: 'not authorised' });
+      return;
+    }
+    return user.toJSON();
+  } catch (error) {
+    res.status(502).json(error);
+  }
+}
+
+// get user details by username
 async function getUserDetails(query) {
   const { username } = query;
   const user = await User.findOne({ where: { username } });
-  return user.toJSON();
-}
-
-async function getUser(body, res) {
-  const { email, password } = body;
-  const user = await User.findOne({ where: { email } });
-  if (user.password !== password) {
-    res.status(401).json({ message: "not authorised" });
-    return;
-  }
   return user.toJSON();
 }
 
@@ -37,7 +62,7 @@ async function getTweets(reqQuery) {
     const user = await User.findOne({
       where: { username },
     });
-    query = { where: { userId: user.id }, order: [["createdAt", "DESC"]] };
+    query = { where: { userId: user.id }, order: [['createdAt', 'DESC']] };
   } else if (tweetId) {
     query = { where: { id: tweetId } };
   } else {
