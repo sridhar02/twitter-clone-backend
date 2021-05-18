@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const express = require('express');
 const cors = require('cors');
-// const { generateData } = require("./mockData");
+const { generateData } = require('./mockData');
 
 // Handler functions
 const {
@@ -38,8 +38,8 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   console.log(req.body);
-  const user = await getUser(req.body, res);
-  res.json(user);
+  const login = await getUser(req.body, res);
+  res.json(login);
 });
 
 app.get('/user', async (req, res) => {
@@ -101,8 +101,8 @@ app.delete('/like', async (req, res) => {
 
 app.post('/follow', async (req, res) => {
   try {
-    const follow = await createFollow(req.body);
-    res.status(201).json(follow);
+    const follow = await createFollow(req.body, res);
+    res.status(201).json({ message: 'new followers created' });
   } catch (error) {
     res.status(400).json({ message: 'Bad Request', error });
   }

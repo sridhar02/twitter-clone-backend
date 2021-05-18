@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
-const { sequelize, User, Tweet, Like, Follow } = require('./models');
+const bcrypt = require("bcrypt");
+const { sequelize, User, Tweet, Like, Follow, Token } = require("./models");
 
 // constants
 const saltRounds = 10;
@@ -25,17 +25,21 @@ async function getUser(body, res) {
   console.log(body);
   try {
     const user = await User.findOne({ where: { email } });
-    // const vaild = await bcrypt.compareSync(password, user.password);
-    // if (!vaild) {
-    //   res.status(401).json({ message: 'not authorised' });
-    //   return;
-    // }
-    if (password !== user.password) {
-      res.status(401).json({ message: 'not authorised' });
+    const vaild = await bcrypt.compareSync(password, user.password);
+    if (!vaild) {
+      res
+        .status(401)
+        .json({ message: "not authorised & password does not match" });
       return;
     }
-    return user.toJSON();
+    const token = await Token.create({ userId: user.id });
+    const updatedUser = user.toJSON();
+    delete updatedUser.password;
+    updatedUser.secret = token.secret;
+    
+    return updatedUser;
   } catch (error) {
+    console.log(error);
     res.status(502).json(error);
   }
 }
@@ -62,7 +66,7 @@ async function getTweets(reqQuery) {
     const user = await User.findOne({
       where: { username },
     });
-    query = { where: { userId: user.id }, order: [['createdAt', 'DESC']] };
+    query = { where: { userId: user.id }, order: [["createdAt", "DESC"]] };
   } else if (tweetId) {
     query = { where: { id: tweetId } };
   } else {
@@ -118,10 +122,29 @@ async function deleteLike(tweetId, userId) {
 
 // Follow CRUD
 
-async function createFollow(body) {
+async function createFollow(body, res) {
   // Follower hanedler and following handler is same for this case
-  const follow = await Follow.create(body);
-  return follow.toJSON();
+  const { userId } = body;
+  try {
+    const t = await sequelize.transaction(async (t) => {
+      const follow = await Follow.create(body, { transaction: t });
+
+      const user = await User.findOne({ where: { id: userId } });
+
+      const count = user.followersCount + 1;
+
+      const _ = await User.update(
+        { followersCount: followersCount },
+        {
+          where: { id: userId },
+        },
+        { transaction: t }
+      );
+      return true;
+    });
+  } catch (error) {
+    res.status(404).end();
+  }
 }
 
 // get all my followers
