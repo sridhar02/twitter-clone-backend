@@ -11,35 +11,48 @@ const sequelize = new Sequelize('twitter', 'postgres', '1234', {
 });
 
 // User Modal
-const User = sequelize.define('user', {
-  // Model attributes are defined here
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
+const User = sequelize.define(
+  'user',
+  {
+    // Model attributes are defined here
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    profileImage: {
+      type: DataTypes.STRING,
+    },
+    followersCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    followingCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
   },
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  followersCount: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
-  },
-  followingCount: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
-  },
-});
+  {
+    defaultScope: {
+      attributes: {
+        exclude: "password",
+      },
+    },
+  }
+);
 
 const Tweet = sequelize.define('tweet', {
   text: {

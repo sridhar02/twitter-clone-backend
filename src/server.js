@@ -28,7 +28,7 @@ app.use(cors());
 
 app.use(express.json());
 
-// generateData();
+generateData();
 
 // CRUD for User
 app.post('/signup', async (req, res) => {

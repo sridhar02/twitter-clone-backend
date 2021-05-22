@@ -17,7 +17,7 @@ async function createUsers() {
 async function createTweets() {
   const totalUserCount = await User.count({});
   // const randomUserId = Math.floor(Math.random() * totalUserCount);
-  const randomUserId = 228;
+  const randomUserId = 114;
   const tweet = await Tweet.create({
     text: faker.lorem.text(),
     userId: randomUserId,
@@ -29,7 +29,7 @@ async function createTweets() {
 function generateData() {
   setInterval(() => {
     // createUsers();
-    createTweets();
+    // createTweets();
   }, 500);
 }
 
