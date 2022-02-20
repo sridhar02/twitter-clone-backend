@@ -1,4 +1,4 @@
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 const { User, Tweet, Like, Follow } = require('./models');
 const { createUser } = require('./handlers.js');
 
@@ -10,16 +10,15 @@ async function createUsers() {
     password: faker.internet.password(),
   };
   const user = await createUser(data);
-  // const user = User.create(data);
   return user;
 }
 
 async function createTweets() {
   const totalUserCount = await User.count({});
-  // const randomUserId = Math.floor(Math.random() * totalUserCount);
-  const randomUserId = 114;
+  const randomUserId = Math.floor(Math.random() * totalUserCount);
+  // const randomUserId = 114;
   const tweet = await Tweet.create({
-    text: faker.lorem.text(),
+    text: faker.lorem.paragraph(),
     userId: randomUserId,
   });
 
@@ -28,8 +27,8 @@ async function createTweets() {
 
 function generateData() {
   setInterval(() => {
-    // createUsers();
-    // createTweets();
+    createUsers();
+    // createTweets();  
   }, 500);
 }
 
