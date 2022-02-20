@@ -20,7 +20,7 @@ const {
   getUserDetails,
 } = require('./handlers');
 
-const PORT = 8000;
+const PORT = process.env.PORT;
 
 //Middlewares
 const app = express();
@@ -29,6 +29,11 @@ app.use(cors());
 app.use(express.json());
 
 // generateData();
+
+// Test End Point
+app.get('/',(req,res) =>{
+  res.status(200).json("Hello world")
+})
 
 // CRUD for User
 app.post('/signup', async (req, res) => {
