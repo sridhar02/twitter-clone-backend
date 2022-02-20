@@ -120,7 +120,10 @@ Token.belongsTo(User);
 async function connection() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ 
+      // force:false,
+      alter: false
+     });
     console.log('All models were synchronized successfully.');
     console.log('Connection has been established successfully.');
   } catch (error) {

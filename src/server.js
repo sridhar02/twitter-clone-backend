@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
+  // }
   require('dotenv').config();
-}
 const express = require('express');
 const cors = require('cors');
 const { generateData } = require('./mockData');
@@ -28,7 +28,7 @@ app.use(cors());
 
 app.use(express.json());
 
-generateData();
+// generateData();
 
 // CRUD for User
 app.post('/signup', async (req, res) => {
@@ -102,6 +102,7 @@ app.delete('/like', async (req, res) => {
 app.post('/follow', async (req, res) => {
   try {
     const follow = await createFollow(req.body, res);
+    console.log(follow);
     res.status(201).json({ message: 'new followers created' });
   } catch (error) {
     res.status(400).json({ message: 'Bad Request', error });
