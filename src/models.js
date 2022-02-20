@@ -1,8 +1,8 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const { prettify } = require('sql-log-prettifier');
 
-const sequelize = new Sequelize('twitter', 'postgres', '1234', {
-  host: 'localhost',
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
   dialect: 'postgres',
   logging: function (unformattedAndUglySql) {
     const prettifiedSQL = prettify(unformattedAndUglySql);
